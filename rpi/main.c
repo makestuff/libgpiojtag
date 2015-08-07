@@ -61,6 +61,9 @@ int main(int argc, const char *argv[]) {
 	pinMode(TMS, OUTPUT);
 	pinMode(TDI, OUTPUT);
 	pinMode(TDO, INPUT);
+	digitalWrite(TCK, LOW);
+	digitalWrite(TMS, LOW);
+	digitalWrite(TDI, LOW);
 
 	// Parse .svf file
 	const char *error = NULL;
