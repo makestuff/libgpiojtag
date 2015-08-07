@@ -387,6 +387,11 @@ static inline void jShiftInOnly(
 	uint8 inByte;
 	uint32 mask = 1;
 
+	// Is there actually anything to do?
+	if ( numBits == 0 ) {
+		return;
+	}
+
 	// Do final bit separately
 	numBits--;
 
@@ -418,6 +423,10 @@ static inline void jShiftInOnly(
 	}
 
 	// Final bit
+	if ( mask == 0x100 ) {
+		mask = 1;
+		inByte = *inData;
+	}
 	cb->setTMS(true);
 	inOnly();
 }
@@ -428,6 +437,11 @@ static inline void jShiftInOut(
 {
 	uint8 inByte, outByte = 0;
 	uint32 mask = 1;
+
+	// Is there actually anything to do?
+	if ( numBits == 0 ) {
+		return;
+	}
 
 	// Do final bit separately
 	numBits--;
@@ -442,33 +456,49 @@ static inline void jShiftInOut(
 		cb->setTCK(false); \
 		mask <<= 1
 
-	// Do all but the final bit
+	// Execute shift operation
 	inByte = *inData;
-	outData--;
-	while ( numBits ) {
-		const uint32 count = (numBits <= 8) ? numBits : 8;
-		inByte = *inData;
-		outByte = 0;
-		mask = 1;
-		switch ( count ) {
-			case 8: inOut();
-			case 7: inOut();
-			case 6: inOut();
-			case 5: inOut();
-			case 4: inOut();
-			case 3: inOut();
-			case 2: inOut();
-			case 1: inOut();
-		}
-		numBits -= count;
-		inData++;
-		*++outData = outByte;
-	}
+	if ( numBits ) {
+		// Do all but the final bit
+		do {
+			const uint32 count = (numBits <= 8) ? numBits : 8;
+			inByte = *inData;
+			outByte = 0;
+			mask = 1;
+			switch ( count ) {
+				case 8: inOut();
+				case 7: inOut();
+				case 6: inOut();
+				case 5: inOut();
+				case 4: inOut();
+				case 3: inOut();
+				case 2: inOut();
+				case 1: inOut();
+			}
+			numBits -= count;
+			inData++;
+			*outData++ = outByte;
+		} while ( numBits );
 
-	// Final bit
-	cb->setTMS(true);
-	inOut();
-	*outData = outByte;
+		// Final bit
+		if ( mask < 0x100 ) {
+			// Update previous byte
+			cb->setTMS(true);
+			inOut();
+			*--outData = outByte;
+		} else {
+			// Add a new byte
+			mask = 1;
+			cb->setTMS(true);
+			inOut();
+			*outData = outByte;
+		}
+	} else {
+		// Only need to do a single bit
+		cb->setTMS(true);
+		inOut();
+		*outData = outByte;
+	}
 }
 
 static inline void jClockFSM(
