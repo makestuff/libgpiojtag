@@ -70,7 +70,7 @@ static inline void jClocks(
 );
 
 // Dump a human-readable representation of the .svf file to stdout
-#ifdef DEBUG
+#ifdef _DEBUG
 	static void csvfDump(const uint8 *buffer);
 #endif
 
@@ -110,7 +110,7 @@ ParserStatus parse(
 	fStatus = flLoadSvfAndConvertToCsvf(progFile, &csvfBuf, &maxBufSize, error);
 	CHECK_STATUS(fStatus, GJ_FILE, cleanup, "parser()");
 	ptr = csvfBuf.data;
-	#ifdef DEBUG
+	#ifdef _DEBUG
 		csvfDump(csvfBuf.data);
 	#endif
 
@@ -261,7 +261,7 @@ static bool tdoCompare(
 	return false;
 }
 
-#ifdef DEBUG
+#ifdef _DEBUG
 static void csvfDump(const uint8 *buffer) {
 	const uint8 *p, *savePtr;
 	uint8 byte;
