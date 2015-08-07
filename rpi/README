@@ -1,0 +1,3 @@
+Example implementation targetting the Raspberry Pi. It uses the wiringPi library
+by Gordon Henderson. Note that whereas the libgpiojtag code is LGPLv3, this is
+regular GPLv3.

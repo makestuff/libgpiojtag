@@ -1,0 +1,10 @@
+The libgpiojtag is a static-link library which parses an .svf programming file
+and executes the JTAG operations specified therein on a device attached via some
+simple GPIO mechanism. An example implementation is provided for the Raspberry
+Pi, but porting to other Linux platforms with GPIO should be straightforward.
+Internally, the library works by using an undocumented entry-point to the
+FPGALink DLL, which converts an .svf text file into a much-simplified binary
+format, which is easily interpreted by a simple state-machine.
+
+Chris McClelland
+2015-08-07
